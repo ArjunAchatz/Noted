@@ -4,6 +4,7 @@ package innovations.doubleeh.com.noted.ui.notedAdd
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
@@ -34,37 +35,39 @@ class NotedAddActivity : AppCompatActivity() {
     @Inject
     lateinit var notedDatabase: NotedDatabase
 
-    enum class BUNDLE_KEYS {
-        IS_PRIORITY,
-        DATE,
-        TIME
-    }
-
-    var isPriority: Boolean = false
-
-    var hourOfDay: Int = 0
-    var minute: Int = 0
-
-    var year: Int = 0
-    var month: Int = 0
-    var day: Int = 0
+    lateinit var notedAddViewModel: NotedAddViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AndroidInjection.inject(this)
         setContentView(R.layout.activity_noted_add)
 
-        isPriority = savedInstanceState?.getBoolean(BUNDLE_KEYS.IS_PRIORITY.name) ?: false
-        setDateValues(savedInstanceState?.getString(BUNDLE_KEYS.DATE.name) ?: "")
-        setTimeValues(savedInstanceState?.getString(BUNDLE_KEYS.TIME.name) ?: "")
+        notedAddViewModel = ViewModelProviders.of(this).get(NotedAddViewModel::class.java)
+
+        notedAddViewModel
+                .getIsPriorityLiveData()
+                .observe(this, android.arch.lifecycle.Observer<Boolean> {
+                    notePriority.isChecked = it ?: false
+                })
+
+        notedAddViewModel
+                .getDateLiveData()
+                .observe(this, android.arch.lifecycle.Observer<String> {
+                    reminderDate.text = if(!it.isNullOrEmpty()) it else "Enter Date"
+                })
+
+        notedAddViewModel
+                .getTimeLiveData()
+                .observe(this, android.arch.lifecycle.Observer<String> {
+                    reminderTime.text = if(!it.isNullOrEmpty()) it else "Enter Time"
+                })
+
 
         reminderTime.setOnClickListener {
             val timePicker = TimePickerFragment()
             timePicker.saveTimeListener = object : TimePickerFragment.onSaveTimeListener {
                 override fun onSaveTime(hourOfDay: Int, minute: Int) {
-                    this@NotedAddActivity.hourOfDay = hourOfDay
-                    this@NotedAddActivity.minute = minute
-                    reminderTime.text = getTime(hourOfDay, minute)
+                    notedAddViewModel.setTimeLiveData(getTime(hourOfDay, minute))
                 }
             }
             timePicker.show(supportFragmentManager, "TimePicker")
@@ -74,26 +77,16 @@ class NotedAddActivity : AppCompatActivity() {
             val datePicker = DatePickerFragment()
             datePicker.dateSetListener = object : DatePickerFragment.onDateSetListener {
                 override fun onDateSet(year: Int, month: Int, day: Int) {
-                    this@NotedAddActivity.year = year
-                    this@NotedAddActivity.month = month
-                    this@NotedAddActivity.day = day
-                    reminderDate.text = getDate(year, month, day)
+                    notedAddViewModel.setDateLiveData(getDate(year, month, day))
                 }
             }
             datePicker.show(supportFragmentManager, "TimePicker")
         }
 
         notePriority.setOnCheckedChangeListener { button, isChecked ->
-            this@NotedAddActivity.isPriority = isChecked
+            notedAddViewModel.setIsPriorityLiveData(isChecked)
         }
 
-    }
-
-    override fun onSaveInstanceState(outState: Bundle?) {
-        outState?.putBoolean(BUNDLE_KEYS.IS_PRIORITY.name, isPriority)
-        outState?.putString(BUNDLE_KEYS.DATE.name, getDate(year, month, day))
-        outState?.putString(BUNDLE_KEYS.TIME.name, getTime(hourOfDay, minute))
-        super.onSaveInstanceState(outState)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -106,8 +99,8 @@ class NotedAddActivity : AppCompatActivity() {
         if (item?.itemId?.equals(R.id.action_save_note) == true) {
 
             val validMsg = !noteMsg.text.toString().isEmpty()
-            val validDate = reminderDate?.text?.isNullOrEmpty() == false && reminderDate?.text?.contains("/") == true
-            val validTime = reminderTime?.text?.isNullOrEmpty() == false && reminderTime?.text?.contains(":") == true
+            val validDate = !reminderDate.text.isNullOrEmpty() && reminderDate.text.contains("/")
+            val validTime = !reminderTime.text.isNullOrEmpty() && reminderTime.text.contains(":")
 
             if (validMsg && validDate && validTime) {
                 Observable
@@ -117,9 +110,9 @@ class NotedAddActivity : AppCompatActivity() {
                             notedDatabase.notesDao().insert(
                                     Note(
                                             msg = noteMsg.text.toString(),
-                                            highPriority = isPriority,
-                                            dateToRemind = getDate(year, month, day),
-                                            timeToRemind = getTime(hourOfDay, minute)
+                                            highPriority = notePriority.isChecked,
+                                            dateToRemind = reminderDate.text.toString(),
+                                            timeToRemind = reminderTime.text.toString()
                                     )
                             )
                         }
@@ -211,24 +204,6 @@ class NotedAddActivity : AppCompatActivity() {
 
     fun getDate(year: Int, month: Int, day: Int) = "$day/$month/$year"
 
-    fun setDateValues(date: String) {
-        val split = date.split("/")
-        if (split.size == 3) {
-            year = split[0].toInt()
-            month = split[1].toInt()
-            day = split[2].toInt()
-            reminderDate.text = getDate(year, month, day)
-        }
-    }
-
     fun getTime(hourOfDay: Int, minute: Int) = "$hourOfDay:$minute"
 
-    fun setTimeValues(time: String) {
-        val split = time.split(":")
-        if (split.size == 2) {
-            hourOfDay = split[0].toInt()
-            minute = split[1].toInt()
-            reminderTime.text = getTime(hourOfDay, minute)
-        }
-    }
 }
