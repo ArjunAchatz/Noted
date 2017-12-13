@@ -10,6 +10,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AppCompatActivity
+import android.text.Editable
+import android.text.TextWatcher
 import android.text.format.DateFormat
 import android.view.Menu
 import android.view.MenuItem
@@ -20,6 +22,8 @@ import dagger.android.AndroidInjection
 import innovations.doubleeh.com.noted.R
 import innovations.doubleeh.com.noted.repository.NotedDatabase
 import innovations.doubleeh.com.noted.ui.notedList.NotedListActivity
+import innovations.doubleeh.com.noted.utils.getDate
+import innovations.doubleeh.com.noted.utils.getTime
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -65,7 +69,6 @@ class NotedAddActivity : AppCompatActivity() {
                     reminderTime.text = if (!it.isNullOrEmpty()) it else "Enter Time"
                 })
 
-
         reminderTime.setOnClickListener {
             val timePicker = TimePickerFragment()
             timePicker.saveTimeListener = object : TimePickerFragment.onSaveTimeListener {
@@ -90,6 +93,18 @@ class NotedAddActivity : AppCompatActivity() {
             notedAddViewModel.setIsPriorityLiveData(isChecked)
         }
 
+        noteMsg.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                notedAddViewModel.setMsg(s?.toString())
+            }
+        })
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -109,14 +124,7 @@ class NotedAddActivity : AppCompatActivity() {
                 Observable
                         .just(1)
                         .observeOn(Schedulers.io())
-                        .map {
-                            notedAddViewModel.saveNote(
-                                    msg = noteMsg.text.toString(),
-                                    highPriority = notePriority.isChecked,
-                                    dateToRemind = reminderDate.text.toString(),
-                                    timeToRemind = reminderTime.text.toString()
-                            )
-                        }
+                        .map { notedAddViewModel.saveNote() }
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(object : Observer<Long> {
                             var disposable: Disposable? = null
@@ -202,9 +210,5 @@ class NotedAddActivity : AppCompatActivity() {
         }
 
     }
-
-    fun getDate(year: Int, month: Int, day: Int) = "$day/$month/$year"
-
-    fun getTime(hourOfDay: Int, minute: Int) = "$hourOfDay:$minute"
 
 }

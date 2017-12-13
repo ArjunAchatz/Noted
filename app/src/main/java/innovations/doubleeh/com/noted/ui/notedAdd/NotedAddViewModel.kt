@@ -13,6 +13,7 @@ import javax.inject.Inject
 @SuppressWarnings("unchecked")
 class NotedAddViewModel @Inject constructor(val notedDatabase: NotedDatabase) : ViewModel() {
 
+    private var msg: MutableLiveData<String>? = null
     private var isPriority: MutableLiveData<Boolean>? = null
     private var date: MutableLiveData<String>? = null
     private var time: MutableLiveData<String>? = null
@@ -24,6 +25,7 @@ class NotedAddViewModel @Inject constructor(val notedDatabase: NotedDatabase) : 
         }
         return isPriority!!
     }
+
     fun setIsPriorityLiveData(newValue: Boolean) {
         isPriority?.value = newValue
     }
@@ -35,6 +37,7 @@ class NotedAddViewModel @Inject constructor(val notedDatabase: NotedDatabase) : 
         }
         return date!!
     }
+
     fun setDateLiveData(newValue: String) {
         date?.value = newValue
     }
@@ -46,11 +49,26 @@ class NotedAddViewModel @Inject constructor(val notedDatabase: NotedDatabase) : 
         }
         return time!!
     }
+
     fun setTimeLiveData(newValue: String) {
         time?.value = newValue
     }
 
-    fun saveNote(msg: String, highPriority: Boolean, dateToRemind: String, timeToRemind: String): Long {
-        return notedDatabase.notesDao().insert(Note(0, msg, highPriority, dateToRemind, timeToRemind))
+    fun saveNote(): Long {
+        return notedDatabase
+                .notesDao()
+                .insert(
+                        Note(
+                                0,
+                                msg?.value ?: "",
+                                isPriority?.value ?: false,
+                                date?.value ?: "",
+                                time?.value ?: ""
+                        )
+                )
+    }
+
+    fun setMsg(newMsg: String?) {
+        msg?.value = newMsg
     }
 }
