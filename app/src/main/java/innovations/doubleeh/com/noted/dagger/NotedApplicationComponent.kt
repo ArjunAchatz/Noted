@@ -1,7 +1,9 @@
 package innovations.doubleeh.com.noted.dagger
 
+import android.app.Application
+import dagger.BindsInstance
 import dagger.Component
-import dagger.android.AndroidInjector
+import dagger.android.AndroidInjectionModule
 import innovations.doubleeh.com.noted.NotedApplication
 import javax.inject.Singleton
 
@@ -10,10 +12,18 @@ import javax.inject.Singleton
  */
 
 @Singleton
-@Component(modules = arrayOf(NotedApplicationModule::class))
-interface NotedApplicationComponent : AndroidInjector<NotedApplication> {
-
+@Component
+(modules = arrayOf(
+        AndroidInjectionModule::class,
+        NotedApplicationModule::class,
+        AndroidActivitiesModule::class)
+)
+interface NotedApplicationComponent {
     @Component.Builder
-    abstract class Builder : AndroidInjector.Builder<NotedApplication>()
-
+    interface Builder {
+        @BindsInstance
+        fun application(application: Application): Builder
+        fun build(): NotedApplicationComponent
+    }
+    fun inject(notedApplication: NotedApplication)
 }

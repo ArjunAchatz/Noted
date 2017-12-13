@@ -23,6 +23,10 @@ class NotedApplication : Application(), HasActivityInjector {
 
     override fun onCreate() {
         super.onCreate()
-        DaggerNotedApplicationComponent.builder().create(this).inject(this)
+        DaggerNotedApplicationComponent
+                .builder()
+                .application(this)
+                .build()
+                .inject(this)
     }
 }
