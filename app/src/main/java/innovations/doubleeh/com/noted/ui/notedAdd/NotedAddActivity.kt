@@ -4,6 +4,7 @@ package innovations.doubleeh.com.noted.ui.notedAdd
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
+import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
@@ -17,7 +18,6 @@ import android.widget.TimePicker
 import android.widget.Toast
 import dagger.android.AndroidInjection
 import innovations.doubleeh.com.noted.R
-import innovations.doubleeh.com.noted.repository.Note
 import innovations.doubleeh.com.noted.repository.NotedDatabase
 import innovations.doubleeh.com.noted.ui.notedList.NotedListActivity
 import io.reactivex.Observable
@@ -35,6 +35,9 @@ class NotedAddActivity : AppCompatActivity() {
     @Inject
     lateinit var notedDatabase: NotedDatabase
 
+    @Inject
+    lateinit var factory: ViewModelProvider.Factory
+
     lateinit var notedAddViewModel: NotedAddViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +45,7 @@ class NotedAddActivity : AppCompatActivity() {
         AndroidInjection.inject(this)
         setContentView(R.layout.activity_noted_add)
 
-        notedAddViewModel = ViewModelProviders.of(this).get(NotedAddViewModel::class.java)
+        notedAddViewModel = ViewModelProviders.of(this, factory).get(NotedAddViewModel::class.java)
 
         notedAddViewModel
                 .getIsPriorityLiveData()
@@ -53,13 +56,13 @@ class NotedAddActivity : AppCompatActivity() {
         notedAddViewModel
                 .getDateLiveData()
                 .observe(this, android.arch.lifecycle.Observer<String> {
-                    reminderDate.text = if(!it.isNullOrEmpty()) it else "Enter Date"
+                    reminderDate.text = if (!it.isNullOrEmpty()) it else "Enter Date"
                 })
 
         notedAddViewModel
                 .getTimeLiveData()
                 .observe(this, android.arch.lifecycle.Observer<String> {
-                    reminderTime.text = if(!it.isNullOrEmpty()) it else "Enter Time"
+                    reminderTime.text = if (!it.isNullOrEmpty()) it else "Enter Time"
                 })
 
 
@@ -107,13 +110,11 @@ class NotedAddActivity : AppCompatActivity() {
                         .just(1)
                         .observeOn(Schedulers.io())
                         .map {
-                            notedDatabase.notesDao().insert(
-                                    Note(
-                                            msg = noteMsg.text.toString(),
-                                            highPriority = notePriority.isChecked,
-                                            dateToRemind = reminderDate.text.toString(),
-                                            timeToRemind = reminderTime.text.toString()
-                                    )
+                            notedAddViewModel.saveNote(
+                                    msg = noteMsg.text.toString(),
+                                    highPriority = notePriority.isChecked,
+                                    dateToRemind = reminderDate.text.toString(),
+                                    timeToRemind = reminderTime.text.toString()
                             )
                         }
                         .observeOn(AndroidSchedulers.mainThread())

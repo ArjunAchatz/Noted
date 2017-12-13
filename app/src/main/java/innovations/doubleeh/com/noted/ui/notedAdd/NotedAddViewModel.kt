@@ -2,12 +2,16 @@ package innovations.doubleeh.com.noted.ui.notedAdd
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import innovations.doubleeh.com.noted.repository.Note
+import innovations.doubleeh.com.noted.repository.NotedDatabase
+import javax.inject.Inject
 
 /**
  * Created by arjunachatz on 2017-12-12.
  */
 
-class NotedAddViewModel : ViewModel() {
+@SuppressWarnings("unchecked")
+class NotedAddViewModel @Inject constructor(val notedDatabase: NotedDatabase) : ViewModel() {
 
     private var isPriority: MutableLiveData<Boolean>? = null
     private var date: MutableLiveData<String>? = null
@@ -46,4 +50,7 @@ class NotedAddViewModel : ViewModel() {
         time?.value = newValue
     }
 
+    fun saveNote(msg: String, highPriority: Boolean, dateToRemind: String, timeToRemind: String): Long {
+        return notedDatabase.notesDao().insert(Note(0, msg, highPriority, dateToRemind, timeToRemind))
+    }
 }
