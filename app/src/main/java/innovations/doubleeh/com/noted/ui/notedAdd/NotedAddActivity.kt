@@ -101,7 +101,7 @@ class NotedAddActivity : AppCompatActivity() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                notedAddViewModel.setMsg(s?.toString())
+                notedAddViewModel.msg = s?.toString()
             }
         })
 

@@ -13,7 +13,7 @@ import javax.inject.Inject
 @SuppressWarnings("unchecked")
 class NotedAddViewModel @Inject constructor(val notedDatabase: NotedDatabase) : ViewModel() {
 
-    private var msg: MutableLiveData<String>? = null
+    var msg: String? = null
     private var isPriority: MutableLiveData<Boolean>? = null
     private var date: MutableLiveData<String>? = null
     private var time: MutableLiveData<String>? = null
@@ -60,7 +60,7 @@ class NotedAddViewModel @Inject constructor(val notedDatabase: NotedDatabase) : 
                 .insert(
                         Note(
                                 0,
-                                msg?.value ?: "",
+                                msg ?: "",
                                 isPriority?.value ?: false,
                                 date?.value ?: "",
                                 time?.value ?: ""
@@ -68,7 +68,4 @@ class NotedAddViewModel @Inject constructor(val notedDatabase: NotedDatabase) : 
                 )
     }
 
-    fun setMsg(newMsg: String?) {
-        msg?.value = newMsg
-    }
 }
