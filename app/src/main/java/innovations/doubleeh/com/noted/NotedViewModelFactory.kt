@@ -1,4 +1,4 @@
-package innovations.doubleeh.com.noted.ui
+package innovations.doubleeh.com.noted
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider

@@ -21,6 +21,8 @@ import android.widget.Toast
 import dagger.android.AndroidInjection
 import innovations.doubleeh.com.noted.R
 import innovations.doubleeh.com.noted.repository.NotedDatabase
+import innovations.doubleeh.com.noted.ui.DatePickerFragment
+import innovations.doubleeh.com.noted.ui.TimePickerFragment
 import innovations.doubleeh.com.noted.ui.notedList.NotedListActivity
 import innovations.doubleeh.com.noted.utils.getDate
 import innovations.doubleeh.com.noted.utils.getTime
@@ -35,9 +37,6 @@ import javax.inject.Inject
 
 
 class NotedAddActivity : AppCompatActivity() {
-
-    @Inject
-    lateinit var notedDatabase: NotedDatabase
 
     @Inject
     lateinit var factory: ViewModelProvider.Factory
@@ -159,56 +158,6 @@ class NotedAddActivity : AppCompatActivity() {
         }
 
         return super.onOptionsItemSelected(item)
-    }
-
-    class DatePickerFragment : DialogFragment(), DatePickerDialog.OnDateSetListener {
-
-        var dateSetListener: onDateSetListener? = null
-
-        interface onDateSetListener {
-            fun onDateSet(year: Int, month: Int, day: Int)
-        }
-
-        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            // Use the current date as the default date in the picker
-            val c = Calendar.getInstance()
-            val year = c.get(Calendar.YEAR)
-            val month = c.get(Calendar.MONTH)
-            val day = c.get(Calendar.DAY_OF_MONTH)
-
-            // Create a new instance of DatePickerDialog and return it
-            return DatePickerDialog(activity, this, year, month, day)
-        }
-
-        override fun onDateSet(view: DatePicker, year: Int, month: Int, day: Int) {
-            dateSetListener?.onDateSet(year, month, day)
-        }
-    }
-
-    class TimePickerFragment : DialogFragment(), TimePickerDialog.OnTimeSetListener {
-
-        var saveTimeListener: onSaveTimeListener? = null
-
-        interface onSaveTimeListener {
-            fun onSaveTime(hourOfDay: Int, minute: Int)
-        }
-
-        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            // Use the current time as the default values for the picker
-            val c = Calendar.getInstance()
-            val hour = c.get(Calendar.HOUR_OF_DAY)
-            val minute = c.get(Calendar.MINUTE)
-
-
-            // Create a new instance of TimePickerDialog and return it
-            return TimePickerDialog(activity, this, hour, minute,
-                    DateFormat.is24HourFormat(activity))
-        }
-
-        override fun onTimeSet(view: TimePicker, hourOfDay: Int, minute: Int) {
-            saveTimeListener?.onSaveTime(hourOfDay, minute)
-        }
-
     }
 
 }

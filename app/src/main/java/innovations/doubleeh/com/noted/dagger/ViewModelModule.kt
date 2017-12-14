@@ -6,7 +6,7 @@ import android.arch.lifecycle.ViewModelProvider
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
-import innovations.doubleeh.com.noted.ui.NotedViewModelFactory
+import innovations.doubleeh.com.noted.NotedViewModelFactory
 import innovations.doubleeh.com.noted.ui.notedAdd.NotedAddViewModel
 
 /**
