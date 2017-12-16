@@ -18,4 +18,8 @@ interface NotesDao {
 
     @Query("SELECT * FROM $NotesTable")
     fun allNotes(): LiveData<List<Note>>
+
+    @Query("SELECT * FROM $NotesTable WHERE id= :id")
+    fun getNoteById(id: Long): LiveData<Note>
+
 }

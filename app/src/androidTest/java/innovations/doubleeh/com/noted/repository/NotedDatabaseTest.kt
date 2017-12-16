@@ -73,6 +73,18 @@ class NotedDatabaseTest {
         Assert.assertEquals(allNotesAfterUpdate?.get(0)?.msg ?: "", msgNew)
     }
 
+    @Test
+    fun get_Note_ById_Test(){
+        val msgOld = "Hello world"
+        val exampleNote = Note(msg = msgOld)
+
+        exampleNote.id = notedDatabase.notesDao().insert(exampleNote)
+        Assert.assertNotEquals(exampleNote.id, 0)
+
+        val noteFromDbById = notedDatabase.notesDao().getNoteById(id = exampleNote.id)
+        Assert.assertTrue(noteFromDbById.getValueBlocking()?.msg == msgOld)
+    }
+
     @Throws(InterruptedException::class)
     fun <T> LiveData<T>.getValueBlocking(): T? {
         var value: T? = null

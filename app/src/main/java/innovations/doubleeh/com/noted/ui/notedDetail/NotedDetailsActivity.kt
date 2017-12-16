@@ -9,9 +9,6 @@ import javax.inject.Inject
 
 class NotedDetailsActivity : AppCompatActivity() {
 
-    @Inject
-    lateinit var notedDatabase: NotedDatabase
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AndroidInjection.inject(this)
