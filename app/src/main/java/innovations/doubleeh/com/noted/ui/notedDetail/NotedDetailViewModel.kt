@@ -13,13 +13,13 @@ import javax.inject.Inject
 @SuppressWarnings("unchecked")
 class NotedDetailViewModel @Inject constructor(val notedDatabase: NotedDatabase) : ViewModel() {
 
-    private var isPriority: LiveData<Note>? = null
+    private var note: LiveData<Note>? = null
 
     fun getNoteDetails(id: Long): LiveData<Note> {
-        if(isPriority == null){
-            isPriority = notedDatabase.notesDao().getNoteById(id)
+        if(note == null){
+            note = notedDatabase.notesDao().getNoteById(id)
         }
-        return isPriority!!
+        return note!!
     }
 
 }

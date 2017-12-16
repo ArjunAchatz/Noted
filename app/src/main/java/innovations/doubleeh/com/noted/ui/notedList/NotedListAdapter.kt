@@ -13,7 +13,9 @@ import kotlinx.android.synthetic.main.note_list_item.view.*
  * Created by arjunachatz on 2017-12-15.
  */
 
-class NotedListAdapter(val listOfNotes: List<Note> = ArrayList()
+class NotedListAdapter(
+        val listOfNotes: List<Note> = ArrayList(),
+        val itemClicked: (Long) -> Unit
 ) : RecyclerView.Adapter<NotedListAdapter.NotedListViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int) =
@@ -28,12 +30,13 @@ class NotedListAdapter(val listOfNotes: List<Note> = ArrayList()
 
     override fun getItemCount() = listOfNotes.size
 
-    inner class NotedListViewHolder(
-            itemView: View,
-            val msg: TextView? = itemView.noteListItemMsg
-    ) : RecyclerView.ViewHolder(itemView) {
+    inner class NotedListViewHolder(itemView: View, val msg: TextView? = itemView.noteListItemMsg)
+        : RecyclerView.ViewHolder(itemView) {
+
         fun bind(note: Note) {
+            itemView.setOnClickListener { itemClicked(note.id) }
             msg?.text = note.msg
         }
+
     }
 }

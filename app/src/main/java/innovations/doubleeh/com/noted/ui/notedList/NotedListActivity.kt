@@ -9,12 +9,9 @@ import android.support.design.widget.FloatingActionButton
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
-import android.util.Log
 import android.view.View
-
 import dagger.android.AndroidInjection
 import innovations.doubleeh.com.noted.R
-import innovations.doubleeh.com.noted.repository.NotedDatabase
 import innovations.doubleeh.com.noted.ui.notedAdd.NotedAddActivity
 import innovations.doubleeh.com.noted.ui.notedDetail.NotedDetailsActivity
 import kotlinx.android.synthetic.main.content_noted_list.*
@@ -41,7 +38,14 @@ class NotedListActivity : AppCompatActivity() {
                 .getLiveDataListOfNotes()
                 .observe(this, Observer {
                     notesList.layoutManager = LinearLayoutManager(this)
-                    notesList.adapter = NotedListAdapter(it ?: ArrayList())
+                    notesList.adapter = NotedListAdapter(
+                            it ?: ArrayList(),
+                            { noteID ->
+                                val intent = Intent(this, NotedDetailsActivity::class.java)
+                                intent.putExtra("id", noteID)
+                                startActivity(intent)
+                            }
+                    )
                 })
     }
 
