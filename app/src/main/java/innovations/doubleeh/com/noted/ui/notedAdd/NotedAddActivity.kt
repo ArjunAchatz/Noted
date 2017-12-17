@@ -1,26 +1,21 @@
 package innovations.doubleeh.com.noted.ui.notedAdd
 
-
-import android.app.DatePickerDialog
-import android.app.Dialog
-import android.app.TimePickerDialog
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
+import android.databinding.DataBindingUtil
+import android.databinding.ObservableBoolean
+import android.databinding.ObservableField
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
 import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
-import android.text.format.DateFormat
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.DatePicker
-import android.widget.TimePicker
 import android.widget.Toast
 import dagger.android.AndroidInjection
 import innovations.doubleeh.com.noted.R
-import innovations.doubleeh.com.noted.repository.NotedDatabase
+import innovations.doubleeh.com.noted.databinding.ActivityNotedAddBinding
 import innovations.doubleeh.com.noted.ui.DatePickerFragment
 import innovations.doubleeh.com.noted.ui.TimePickerFragment
 import innovations.doubleeh.com.noted.ui.notedList.NotedListActivity
@@ -32,9 +27,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_noted_add.*
-import java.util.*
 import javax.inject.Inject
-
 
 class NotedAddActivity : AppCompatActivity() {
 
@@ -43,29 +36,39 @@ class NotedAddActivity : AppCompatActivity() {
 
     lateinit var notedAddViewModel: NotedAddViewModel
 
+    lateinit var notedAddActivityBinding : ActivityNotedAddBinding
+
+    private val notePriorityObservable = ObservableBoolean()
+    private val noteDateObservable = ObservableField<String>()
+    private val noteTimeObservable = ObservableField<String>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AndroidInjection.inject(this)
-        setContentView(R.layout.activity_noted_add)
+
+        notedAddActivityBinding = DataBindingUtil.setContentView(this, R.layout.activity_noted_add)
+        notedAddActivityBinding.notePriorityObservable = notePriorityObservable
+        notedAddActivityBinding.noteDateObservable = noteDateObservable
+        notedAddActivityBinding.noteTimeObservable = noteTimeObservable
 
         notedAddViewModel = ViewModelProviders.of(this, factory).get(NotedAddViewModel::class.java)
 
         notedAddViewModel
                 .getIsPriorityLiveData()
                 .observe(this, android.arch.lifecycle.Observer<Boolean> {
-                    notePriority.isChecked = it ?: false
+                    notePriorityObservable.set(it ?: false)
                 })
 
         notedAddViewModel
                 .getDateLiveData()
                 .observe(this, android.arch.lifecycle.Observer<String> {
-                    reminderDate.text = if (!it.isNullOrEmpty()) it else "Enter Date"
+                    noteDateObservable.set(if (!it.isNullOrEmpty()) it else "Enter Date")
                 })
 
         notedAddViewModel
                 .getTimeLiveData()
                 .observe(this, android.arch.lifecycle.Observer<String> {
-                    reminderTime.text = if (!it.isNullOrEmpty()) it else "Enter Time"
+                    noteTimeObservable.set(if (!it.isNullOrEmpty()) it else "Enter Time")
                 })
 
         reminderTime.setOnClickListener {
