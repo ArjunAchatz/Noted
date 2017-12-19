@@ -9,6 +9,8 @@ import android.support.design.widget.FloatingActionButton
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import dagger.android.AndroidInjection
 import innovations.doubleeh.com.noted.R
@@ -17,10 +19,17 @@ import innovations.doubleeh.com.noted.ui.notedDetail.NotedDetailsActivity
 import kotlinx.android.synthetic.main.content_noted_list.*
 import javax.inject.Inject
 
+
 class NotedListActivity : AppCompatActivity() {
 
     @Inject
     lateinit var factory: ViewModelProvider.Factory
+
+    val itemClickFn = { noteID: Long ->
+        val intent = Intent(this, NotedDetailsActivity::class.java)
+        intent.putExtra("id", noteID)
+        startActivity(intent)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,19 +42,16 @@ class NotedListActivity : AppCompatActivity() {
         fab.setOnClickListener { view ->
             startActivity(Intent(this@NotedListActivity, NotedAddActivity::class.java))
         }
+        notesList.layoutManager = LinearLayoutManager(this)
 
         ViewModelProviders.of(this, factory).get(NotedListViewModel::class.java)
                 .getLiveDataListOfNotes()
                 .observe(this, Observer {
-                    notesList.layoutManager = LinearLayoutManager(this)
-                    notesList.adapter = NotedListAdapter(
-                            it ?: ArrayList(),
-                            { noteID ->
-                                val intent = Intent(this, NotedDetailsActivity::class.java)
-                                intent.putExtra("id", noteID)
-                                startActivity(intent)
-                            }
-                    )
+                    if(notesList.adapter == null) {
+                        notesList.adapter = NotedListAdapter(ArrayList(it), itemClickFn)
+                    } else {
+                        (notesList.adapter as NotedListAdapter).handleNewData(it ?: ArrayList())
+                    }
                 })
     }
 

@@ -16,5 +16,15 @@ data class Note(
     var msg: String = "",
     var highPriority: Boolean = false,
     var dateToRemind: String = "",
-    var timeToRemind: String = ""
-)
+    var timeToRemind: String = "")
+{
+    override fun equals(other: Any?): Boolean {
+        if(other !is Note) return false
+        if(this.id != other.id) return false
+        if(this.msg != other.msg) return false
+        if(this.highPriority != other.highPriority) return false
+        if(this.dateToRemind != other.dateToRemind) return false
+        if(this.timeToRemind != other.timeToRemind) return false
+        return true
+    }
+}
