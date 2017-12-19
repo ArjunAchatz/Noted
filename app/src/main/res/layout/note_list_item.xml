@@ -1,16 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:background="?attr/selectableItemBackground"
+
+<android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_margin="8dp"
+    app:cardCornerRadius="@dimen/cardview_default_radius"
+    app:cardElevation="@dimen/cardview_default_elevation">
 
-    <TextView
-        android:id="@+id/noteListItemMsg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:textSize="16sp"/>
+    <FrameLayout
+        android:background="?attr/selectableItemBackground"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-</LinearLayout>
+        <LinearLayout
+            android:id="@+id/noteListItemBackground"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/list_item_background"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/noteListItemMsg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/extraText"
+                android:visibility="gone"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="8dp"
+                android:text="a;asjfklasjd;fkljas;kdljf;akljsdf;klja;kdjf;klajsdfk;j;sdkjf;kajsdf;kjas;kldjf;kasjdf;kjsadkjf"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <View
+                android:id="@+id/divider"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/cardview_dark_background"/>
+
+            <TextView
+                android:padding="8dp"
+                android:id="@+id/showExtraText"
+                android:textAlignment="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Extra Text Here"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+
+</android.support.v7.widget.CardView>
+

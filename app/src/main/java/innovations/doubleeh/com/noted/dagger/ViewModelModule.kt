@@ -8,7 +8,6 @@ import dagger.Module
 import dagger.multibindings.IntoMap
 import innovations.doubleeh.com.noted.NotedViewModelFactory
 import innovations.doubleeh.com.noted.ui.notedAdd.NotedAddViewModel
-import innovations.doubleeh.com.noted.ui.notedDetail.NotedDetailViewModel
 import innovations.doubleeh.com.noted.ui.notedList.NotedListViewModel
 
 /**
@@ -22,11 +21,6 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(NotedAddViewModel::class)
     abstract fun bindNotedAddViewModel(notedAddViewModel: NotedAddViewModel): ViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(NotedDetailViewModel::class)
-    abstract fun bindNotedDetailViewModel(notedDetailViewModel: NotedDetailViewModel): ViewModel
 
     @Binds
     @IntoMap

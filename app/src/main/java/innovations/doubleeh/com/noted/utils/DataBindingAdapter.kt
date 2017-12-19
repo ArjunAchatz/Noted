@@ -1,7 +1,6 @@
 package innovations.doubleeh.com.noted.utils
 
 import android.databinding.BindingAdapter
-import android.databinding.ObservableField
 import android.widget.TextView
 
 /**

@@ -5,7 +5,6 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import innovations.doubleeh.com.noted.R
 import innovations.doubleeh.com.noted.repository.Note
 import kotlinx.android.synthetic.main.note_list_item.view.*
@@ -14,10 +13,8 @@ import kotlinx.android.synthetic.main.note_list_item.view.*
  * Created by arjunachatz on 2017-12-15.
  */
 
-class NotedListAdapter(
-        var listOfNotes: ArrayList<Note> = ArrayList(),
-        val itemClicked: (Long) -> Unit
-) : RecyclerView.Adapter<NotedListAdapter.NotedListViewHolder>() {
+class NotedListAdapter(var listOfNotes: ArrayList<Note> = ArrayList())
+    : RecyclerView.Adapter<NotedListAdapter.NotedListViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int) =
             NotedListViewHolder(LayoutInflater
@@ -41,12 +38,21 @@ class NotedListAdapter(
         diffResult.dispatchUpdatesTo(this)
     }
 
-    inner class NotedListViewHolder(itemView: View, val msg: TextView? = itemView.noteListItemMsg)
+    inner class NotedListViewHolder(itemView: View)
         : RecyclerView.ViewHolder(itemView) {
 
         fun bind(note: Note) {
-            itemView.setOnClickListener { itemClicked(note.id) }
-            msg?.text = note.msg
+            itemView.noteListItemMsg.text = note.msg
+            itemView.showExtraText.setOnClickListener {
+                if(itemView.extraText.visibility == View.VISIBLE){
+                    itemView.extraText.visibility = View.GONE
+                    itemView.noteListItemBackground.background = itemView.context.getDrawable(R.drawable.list_item_background)
+                } else {
+                    itemView.extraText.visibility = View.VISIBLE
+                    itemView.noteListItemBackground.background = itemView.context.getDrawable(R.drawable.list_item_highlight_background)
+                }
+
+            }
         }
 
     }

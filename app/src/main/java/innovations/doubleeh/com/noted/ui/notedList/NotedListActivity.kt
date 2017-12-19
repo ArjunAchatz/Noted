@@ -9,27 +9,18 @@ import android.support.design.widget.FloatingActionButton
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import dagger.android.AndroidInjection
 import innovations.doubleeh.com.noted.R
 import innovations.doubleeh.com.noted.ui.notedAdd.NotedAddActivity
-import innovations.doubleeh.com.noted.ui.notedDetail.NotedDetailsActivity
-import kotlinx.android.synthetic.main.content_noted_list.*
 import javax.inject.Inject
+import kotlinx.android.synthetic.main.content_noted_list.*
 
 
 class NotedListActivity : AppCompatActivity() {
 
     @Inject
     lateinit var factory: ViewModelProvider.Factory
-
-    val itemClickFn = { noteID: Long ->
-        val intent = Intent(this, NotedDetailsActivity::class.java)
-        intent.putExtra("id", noteID)
-        startActivity(intent)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +39,7 @@ class NotedListActivity : AppCompatActivity() {
                 .getLiveDataListOfNotes()
                 .observe(this, Observer {
                     if(notesList.adapter == null) {
-                        notesList.adapter = NotedListAdapter(ArrayList(it), itemClickFn)
+                        notesList.adapter = NotedListAdapter(ArrayList(it))
                     } else {
                         (notesList.adapter as NotedListAdapter).handleNewData(it ?: ArrayList())
                     }
