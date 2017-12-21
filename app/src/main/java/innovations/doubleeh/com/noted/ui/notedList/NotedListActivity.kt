@@ -16,8 +16,6 @@ import dagger.android.AndroidInjection
 import innovations.doubleeh.com.noted.R
 import innovations.doubleeh.com.noted.repository.Note
 import innovations.doubleeh.com.noted.ui.notedAdd.NotedAddActivity
-import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_noted_list.*
 import kotlinx.android.synthetic.main.content_noted_list.*
 import javax.inject.Inject
@@ -28,7 +26,7 @@ class NotedListActivity : AppCompatActivity() {
     @Inject
     lateinit var factory: ViewModelProvider.Factory
 
-    lateinit var notedListViewModel:NotedListViewModel
+    lateinit var notedListViewModel: NotedListViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,11 +54,9 @@ class NotedListActivity : AppCompatActivity() {
 
         ItemTouchHelper(RecyclerViewItemSwipeHelper({ position ->
             if (position != null) {
-                val noteRemoved = (notesList.adapter as NotedListAdapter).listOfNotes.get(position)
+                val noteRemoved = (notesList.adapter as NotedListAdapter).listOfNotes[position]
                 showUndoRemoveSnackBar(noteRemoved)
-                Observable.just(0).observeOn(Schedulers.io()).subscribe {
-                    notedListViewModel.notedDatabase.notesDao().delete(noteRemoved)
-                }
+                notedListViewModel.deleteNote(noteRemoved)
             }
         })).attachToRecyclerView(notesList)
     }
@@ -68,11 +64,8 @@ class NotedListActivity : AppCompatActivity() {
     private fun showUndoRemoveSnackBar(noteRemoved: Note) {
         val snackbar = Snackbar.make(notedListCoordinatorLayout, "Deleted note", Snackbar.LENGTH_INDEFINITE)
         snackbar.setAction("Undo", {
-            Observable.just(0).observeOn(Schedulers.io()).subscribe {
-                notedListViewModel.notedDatabase.notesDao().insert(noteRemoved)
-            }
+            notedListViewModel.insertNote(noteRemoved)
         })
         snackbar.show()
     }
-
 }
