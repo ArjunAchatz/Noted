@@ -56,8 +56,8 @@ class NotedListActivity : AppCompatActivity() {
 
         ItemTouchHelper(RecyclerViewItemSwipeHelper({ position ->
             if (position != null) {
-                val noteRemoved = (notesList.adapter as NotedListAdapter).removeItemAt(position)
-                showUndoRemoveSnackBar(position, noteRemoved)
+                val noteRemoved = (notesList.adapter as NotedListAdapter).listOfNotes.get(position)
+                showUndoRemoveSnackBar(noteRemoved)
                 Observable.just(0).observeOn(Schedulers.io()).subscribe {
                     notedListViewModel.notedDatabase.notesDao().delete(noteRemoved)
                 }
@@ -65,10 +65,9 @@ class NotedListActivity : AppCompatActivity() {
         })).attachToRecyclerView(notesList)
     }
 
-    private fun showUndoRemoveSnackBar(position: Int, noteRemoved: Note) {
+    private fun showUndoRemoveSnackBar(noteRemoved: Note) {
         val snackbar = Snackbar.make(notedListCoordinatorLayout, "Deleted note", Snackbar.LENGTH_INDEFINITE)
         snackbar.setAction("Undo", {
-            (notesList.adapter as NotedListAdapter).addBackItem(position, noteRemoved)
             Observable.just(0).observeOn(Schedulers.io()).subscribe {
                 notedListViewModel.notedDatabase.notesDao().insert(noteRemoved)
             }

@@ -29,7 +29,7 @@ class NotedListAdapter(var listOfNotes: ArrayList<Note> = ArrayList())
     override fun getItemCount() = listOfNotes.size
 
     fun handleNewData(newList: List<Note>) {
-        val diffUtilsInput = NoteListDiffUtils(newList, listOfNotes)
+        val diffUtilsInput = NoteListDiffUtils(listOfNotes, newList)
         val diffResult = DiffUtil.calculateDiff(diffUtilsInput)
         listOfNotes.apply {
             clear()
@@ -44,7 +44,7 @@ class NotedListAdapter(var listOfNotes: ArrayList<Note> = ArrayList())
         fun bind(note: Note) {
             itemView.noteListItemMsg.text = note.msg
             itemView.showExtraText.setOnClickListener {
-                if(itemView.extraText.visibility == View.VISIBLE){
+                if (itemView.extraText.visibility == View.VISIBLE) {
                     itemView.extraText.visibility = View.GONE
                     itemView.noteListItemBackground.background = itemView.context.getDrawable(R.drawable.list_item_background)
                 } else {
@@ -54,17 +54,5 @@ class NotedListAdapter(var listOfNotes: ArrayList<Note> = ArrayList())
 
             }
         }
-
     }
-
-    fun removeItemAt(position: Int): Note {
-        notifyItemRemoved(position)
-        return listOfNotes.removeAt(position)
-    }
-
-    fun addBackItem(position: Int, noteRemoved: Note) {
-        listOfNotes.add(position, noteRemoved)
-        notifyItemInserted(position)
-    }
-
 }
