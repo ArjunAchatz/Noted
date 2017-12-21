@@ -57,4 +57,14 @@ class NotedListAdapter(var listOfNotes: ArrayList<Note> = ArrayList())
 
     }
 
+    fun removeItemAt(position: Int): Note {
+        notifyItemRemoved(position)
+        return listOfNotes.removeAt(position)
+    }
+
+    fun addBackItem(position: Int, noteRemoved: Note) {
+        listOfNotes.add(position, noteRemoved)
+        notifyItemInserted(position)
+    }
+
 }
